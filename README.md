@@ -6,7 +6,7 @@ A modern platform that lets founders verify their real-time Stripe revenue, disp
 ### 🔍 Get all startups
 Fetches every public startup on TrustStartup.
 
-```http
+```bash
 GET /api/startups
 
 
@@ -17,7 +17,7 @@ GET /api/startups
 #### Get a specific startup
 Fetch a single startup using its slug.
 
-```http
+```bash
   GET /api/startups/{slug}
 ```
 
