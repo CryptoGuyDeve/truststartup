@@ -10,12 +10,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 /* --------------------------------------------------
    MONTHLY PRICE CALCULATOR
-   $50 base + $3 × current monthIndex (0–11)
+   Flat $20 per month sponsorship pricing
 -------------------------------------------------- */
 function calculateMonthlyPriceCents() {
-  const BASE = 50;
-  const MONTH_INDEX = new Date().getMonth();
-  const monthly = BASE + MONTH_INDEX * 3;
+  const monthly = 20; // USD per month
   return Math.round(monthly * 100); // convert to cents
 }
 

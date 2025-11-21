@@ -16,9 +16,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 /* ---------------------- PRICE CONFIG ---------------------- */
-const BASE_PRICE = 50;
-const MONTH_INDEX = new Date().getMonth();
-const MONTHLY_PRICE = BASE_PRICE + MONTH_INDEX * 3;
+// Flat $20 per month for sidebar sponsorships
+const BASE_PRICE = 20;
+const MONTHLY_PRICE = BASE_PRICE;
 
 /* ---------------------- Slugify ---------------------- */
 function slugify(name: string) {
@@ -206,7 +206,9 @@ export default function Sidebar() {
                   className="p-3 border rounded-lg bg-white shadow-sm"
                 >
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                    <option key={m}>{m} months</option>
+                    <option key={m} value={m}>
+                      {m} months
+                    </option>
                   ))}
                 </select>
 
