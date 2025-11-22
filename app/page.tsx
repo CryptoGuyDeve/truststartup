@@ -184,11 +184,14 @@ export default function Home() {
       {/* Browse by category */}
       {categories.length > 0 && (
         <section className="px-4 pb-24">
-          <div className="max-w-6xl mx-auto space-y-4">
+          {/* FIX: Added 'text-center' to center the h2 heading. 
+            Added 'justify-center' to the flex container to center the category buttons.
+          */}
+          <div className="max-w-6xl mx-auto space-y-6 text-center"> 
             <h2 className="text-lg md:text-xl font-semibold text-gray-900">
               Browse by category
             </h2>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 justify-center"> 
               {categories.map((cat) => (
                 <Button
                   key={cat}
