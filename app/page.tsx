@@ -12,8 +12,10 @@ import { api } from "@/convex/_generated/api";
 import * as React from "react";
 import Footer from "@/components/footer";
 import { PointerHighlight } from "@/components/ui/pointer-highlight";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const [openAddStartup, setOpenAddStartup] = React.useState(false);
 
   /* ------------------------ SEARCH STATE ------------------------ */
@@ -25,6 +27,18 @@ export default function Home() {
     api.startups.searchStartups,
     query.trim() ? { q: query } : "skip"
   );
+
+  const allStartups = useQuery(api.startups.getAllStartups);
+
+  const categories = React.useMemo(() => {
+    if (!allStartups) return [] as string[];
+    const set = new Set<string>();
+    for (const s of allStartups as any[]) {
+      const cat = (s.category ?? "").trim();
+      if (cat) set.add(cat);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [allStartups]);
 
   const results = query.trim() ? (searchResults ?? []) : [];
 
@@ -162,10 +176,35 @@ export default function Home() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.4 }}
-        className="flex justify-center px-4 pb-24"
+        className="flex justify-center px-4 pb-12"
       >
         <Leaderboard />
       </motion.section>
+
+      {/* Browse by category */}
+      {categories.length > 0 && (
+        <section className="px-4 pb-24">
+          <div className="max-w-6xl mx-auto space-y-4">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900">
+              Browse by category
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <Button
+                  key={cat}
+                  variant="outline"
+                  className="rounded-full text-sm"
+                  onClick={() =>
+                    router.push(`/category/${encodeURIComponent(cat)}`)
+                  }
+                >
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <AddStartupDialog
         open={openAddStartup}

@@ -11,9 +11,10 @@ Founders connect their Stripe account, and TrustStartup turns live metrics into 
 - **Stripe-verified revenue** – Never fake screenshots again; all metrics are pulled directly from Stripe.
 - **Public startup profiles** – SEO-friendly pages for each startup (e.g. `/startup/my-cool-saas`).
 - **Live revenue charts** – Daily revenue history with MRR and last-30-days lines.
+- **Browse by category** – Discover startups by vertical (SaaS, fintech, AI, etc.) via `/category/[category]` pages.
 - **Embeddable badges** – Copy‑paste SVG/PNG badges that auto‑update as revenue changes.
 - **Founder dashboard** – Manage startups, sponsorships, and embeds from one place.
-- **Sponsored placements** – Rotate startups in left/right sidebars to drive extra visibility.
+- **Sponsored sidebars** – Affordable homepage placements (from **$20/month**) to feature your startup in rotating sidebars.
 
 ---
 
@@ -85,9 +86,18 @@ Make sure your Convex deployment is configured and reachable before testing data
 
 ---
 
-## 🌐 API Overview
+## 🌐 Routes & API Overview
 
-This project exposes a small HTTP surface for public data and embeds.
+### Core pages
+
+- `/` – Home: hero, search, live leaderboard, and **Browse by category** chips.
+- `/startup/[startup]` – Public startup profile with live Stripe metrics and revenue chart.
+- `/category/[category]` – Filtered grid of startups for a given category, showing live revenue per startup.
+- `/advertise` / `/advertise/success` / `/advertise/cancel` – Flow for purchasing sidebar sponsorships (from **$20/month**).
+
+### HTTP API
+
+This project also exposes a small HTTP surface for public data and embeds.
 
 ### `GET /api/startups`
 Returns all public startups.

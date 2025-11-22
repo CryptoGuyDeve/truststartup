@@ -36,8 +36,9 @@ Core ideas:
 Key locations:
 
 - `app/layout.tsx` – Root layout, header/footer, global sidebars
-- `app/page.tsx` (or other top-level routes) – Landing or dashboard views
+- `app/page.tsx` – Home: hero, search, live leaderboard, and "Browse by category" chips
 - `app/startup/[startup]/page.tsx` – Public startup profile + charts + embed dialog
+- `app/category/[category]/page.tsx` – Category page showing startups filtered by `category` with live revenue
 - `components/RevenueChart.tsx` – Stripe-driven revenue chart used on startup pages
 - `components/sidebar.tsx` – Left/right sponsored startup sidebars and advertise dialog
 - `components/Header.tsx`, `components/footer.tsx` – Global nav and footer
@@ -119,9 +120,20 @@ Flow:
 1. Receive `GET /api/embed/{slug}`.
 2. Use Convex (`api.startups.getAllStartups`) to resolve the startup by slug.
 3. Generate a simple SVG badge with the startup name and revenue.
-4. Respond with `Content-Type: image/svg+xml`.
+4. Respond with `Content-Type`: image/svg+xml`.
 
 The startup page’s embed dialog uses this endpoint to show the preview and to build the `<img>` snippet that founders copy.
+
+### 3.4 Category browsing (`/category/[category]`)
+
+**File:** `app/category/[category]/page.tsx`
+
+- Reads the current category from the URL (`/category/:category`).
+- Uses `useQuery(api.startups.getAllStartups)` and filters by `startup.category` (case-insensitive).
+- For the filtered list, polls `api.startups.getLiveStripeMetrics` every ~10s and merges the latest Stripe `revenue` into `liveData` per startup.
+- Renders a responsive grid of cards showing avatar, name, bio, and **live revenue** per startup.
+
+The home page (`app/page.tsx`) computes the list of distinct categories from `getAllStartups` and renders them as shadcn `<Button>` chips under the leaderboard. Clicking a chip navigates to the corresponding `/category/[category]` page.
 
 ---
 

@@ -233,14 +233,37 @@ export default function RevenueChart({ startupId }: { startupId: string }) {
                 content={
                   <ChartTooltipContent
                     indicator="dot"
-                    labelFormatter={(value: number) =>
-                      new Date(value).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })
-                    }
-                    formatter={(value: any) => `$${Number(value ?? 0).toLocaleString()}`}
+                    // Custom formatter so we can show the date + nicely formatted value.
+                    formatter={(value: any, name: any, item: any) => {
+                      const rawDate = item?.payload?.date;
+                      const d = typeof rawDate === "number" ? new Date(rawDate) : new Date(rawDate ?? 0);
+                      const isValid = !isNaN(d.getTime());
+                      const dateLabel = isValid
+                        ? d.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "";
+
+                      const valueLabel = `$${Number(value ?? 0).toLocaleString()}`;
+
+                      return (
+                        <div className="flex flex-col gap-1 min-w-[8rem]">
+                          {dateLabel && (
+                            <div className="text-xs font-medium text-foreground">
+                              {dateLabel}
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-muted-foreground">{name}</span>
+                            <span className="font-mono font-semibold text-foreground">
+                              {valueLabel}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }}
                   />
                 }
               />

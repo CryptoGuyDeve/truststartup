@@ -286,6 +286,9 @@ export default function StartupPublicPage({
     createdAt?: string;
   } | null>(null);
 
+  // Live metrics for "discover more" carousel startups
+  const [discoverLive, setDiscoverLive] = useState<Record<string, { revenue?: number }>>({});
+
   /* Poll Stripe every 5 seconds */
   useEffect(() => {
     if (!startup?.stripeKey) return;
@@ -315,6 +318,40 @@ export default function StartupPublicPage({
     if (!allStartups) return [];
     return allStartups.filter((s: any) => s._id !== startup?._id);
   }, [allStartups, startup?._id]);
+
+  // Fetch live revenue for discover carousel startups (lighter polling)
+  useEffect(() => {
+    if (!discover.length) return;
+
+    let cancelled = false;
+
+    async function loadDiscover() {
+      const updates: Record<string, { revenue?: number }> = {};
+      await Promise.all(
+        discover.map(async (s: any) => {
+          if (!s.stripeKey) return;
+          try {
+            const res = await getLiveStripe({ stripeKey: s.stripeKey });
+            updates[s._id] = { revenue: res?.revenue };
+          } catch (e) {
+            console.error("discover live stripe fetch error", e);
+          }
+        })
+      );
+
+      if (!cancelled) {
+        setDiscoverLive((prev) => ({ ...prev, ...updates }));
+      }
+    }
+
+    loadDiscover();
+    const id = window.setInterval(loadDiscover, 15000); // every 15s for side startups
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [discover, getLiveStripe]);
 
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [embedOpen, setEmbedOpen] = useState(false);
@@ -596,15 +633,6 @@ export default function StartupPublicPage({
                       </a>
                     )}
                   </div>
-                </div>
-
-                <div className="text-right">
-                  <p className="font-bold text-sm">
-                    $
-                    {Math.round(
-                      discover[carouselIndex].revenue ?? 0
-                    ).toLocaleString()}
-                  </p>
                 </div>
               </CardContent>
             </Card>
